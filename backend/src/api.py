@@ -1,4 +1,4 @@
-import os
+import json
 from flask import Flask, request, jsonify, abort
 from flask_cors import CORS
 
@@ -13,7 +13,7 @@ uncomment the following line to initialize the datbase
 !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 '''
-# db_drop_and_create_all()
+db_drop_and_create_all()
 '''
 Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
 '''
@@ -78,8 +78,8 @@ implement endpoint
 def post_drink(payload):
     try:
         drink=Drink()
-        drink.title= request.headers.get('title')
-        drink.recipe= request.headers.get('recipe')
+        drink.title= request.json.get('title')
+        drink.recipe= json.dumps(request.json.get('recipe'))
         drink.insert()
         return jsonify({
             "success": True,
@@ -108,8 +108,8 @@ def patch_drink(payload, id):
     if not drink:
         abort(404)
     try:
-        drink.title= request.headers.get('title')
-        drink.recipe= request.headers.get('recipe')
+        drink.title= request.json.get('title')
+        drink.recipe= json.dumps(request.json.get('recipe'))
         drink.update()
         return jsonify({
             "success": True,
