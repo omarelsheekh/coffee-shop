@@ -5,7 +5,6 @@ from functools import wraps
 from jose import jwt
 from urllib.request import urlopen
 
-access_token='eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik9HMUtKb25xN3VXSEZ4ejlGVjFaeSJ9.eyJpc3MiOiJodHRwczovL29tYXJlbHNoZWVraC5ldS5hdXRoMC5jb20vIiwic3ViIjoiZ29vZ2xlLW9hdXRoMnwxMTE0MjYxMjM1MjE3NTQyMDM0MTQiLCJhdWQiOiJ0ZXN0IiwiaWF0IjoxNjA1NzIxODA3LCJleHAiOjE2MDU3MjkwMDcsImF6cCI6IlRIcXZYaHVtMmY4bnZuQlk5ekhtMnN3VlRFa1hkVjBhIiwic2NvcGUiOiIiLCJwZXJtaXNzaW9ucyI6WyJkZWxldGU6ZHJpbmtzIiwiZ2V0OmRyaW5rcy1kZXRhaWwiLCJwYXRjaDpkcmlua3MiLCJwb3N0OmRyaW5rcyJdfQ.m9EJSKVVx9WdixgzOqdOqf1sS2fJbYSl5EluaveIoSKIKRSOhxd5yyYDL-qOFGRZpTheVoKSd56Sxc3WpAYOno5vwqBaMYHzEIohPuNKwMoeEniVePZ_J3OZVpMIAm0DM9VRlw5VnCQjvS2AHdSYcOn4smMiOQGMhPsdUVhXd1FX3KQASCSlHsYvyJuYcmTnFDcgkpgyUa6FrWKJax_0DtkyiqNFdaT3fv2F3gii5-4Pyixj8JkCLnsKb0E_lhRroah9ZgqqwPrJsk5ezqVtc7oatdEo1M1p0GfY8trydXatmqhqyq_kccTNZuWWGAYupXvSDwecLEvjCDNkbw33jA'
 AUTH0_DOMAIN = 'omarelsheekh.eu.auth0.com'
 ALGORITHMS = ['RS256']
 API_AUDIENCE = 'test'
@@ -128,16 +127,15 @@ implement @requires_auth(permission) decorator method
     it should use the check_permissions method validate claims and check the requested permission
     return the decorator which passes the decoded payload to the decorated method
 '''
-def requires_auth(f, permission=None):
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        try:
+def requires_auth(permission=None):
+    def requires_auth_decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
             token = get_token_auth_header()
             payload = verify_decode_jwt(token)
             if permission:
                 check_permissions(permission, payload)
-        except AuthError as e:
-            abort(e.status_code)
-        return f(*args, **kwargs)
+            return f(payload, *args, **kwargs)
 
-    return wrapper
+        return wrapper
+    return requires_auth_decorator
