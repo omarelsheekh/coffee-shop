@@ -164,7 +164,21 @@ implement error handlers using the @app.errorhandler(error) decorator
                     }), 404
 
 '''
+@app.errorhandler(500)
+def server_error(error):
+    return jsonify({
+        'success': False,
+        'error': 500,
+        'message': 'internal server error'
+    }), 500
 
+@app.errorhandler(400)
+def bad_request(error):
+    return jsonify({
+        'success': False,
+        'error': 400,
+        'message': 'bad request'
+    }), 400
 '''
 implement error handler for 404
     error handler should conform to general task above 
